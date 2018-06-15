@@ -11,7 +11,7 @@ let io = null;
 module.exports.setup = (server, socketsPath) => {
   io = require('socket.io')(server);
 
-  //io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
+  io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
 
   fs.readdirSync(socketsPath).forEach((name) => {
     require(`${socketsPath}/${name}`);
