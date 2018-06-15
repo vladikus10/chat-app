@@ -1,5 +1,4 @@
 const fs = require('fs');
-const _ = require('lodash');
 const jwt = require('./helpers/jwt');
 
 const redisAdapter = require('socket.io-redis');
@@ -34,11 +33,11 @@ module.exports.setup = (server, socketsPath) => {
   });
 
   io.of('/').on('connection', (socket) => {
-    console.log("Socket connection " + socket.id);
+    console.log(`Socket connection: ${socket.id}`);
     socket.authorized = false;
 
     socket.on('disconnect', (reason) => {
-      console.log(`Socket disconnected ${socket.id}`);
+      console.log(`Socket disconnected: ${socket.id}`);
     });
 
     socket.on('error', (error) =>{
@@ -71,9 +70,3 @@ module.exports.io = () => {
 module.exports.on = (event, callback) => {
   events.push({event: event, callback: callback});
 };
-
-function getSocket(id){
-  return _.find(io.sockets.connected, (s) => {
-    return s.user._id === id;
-  });
-}

@@ -6,7 +6,7 @@ const async = require('async');
 
 chai.use(chaiHttp);
 
-const { MESSAGES, ERRORS, EVENTS } = require('../constants');
+const { EVENTS } = require('../constants');
 
 let user1 = {
     username: 'user1',

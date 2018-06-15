@@ -4,11 +4,8 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { EXPIRATIONS, SALT_ROUNDS} = require('../constants');
 
-const saltRounds = 4;
-const refreshTokenExpiration = 3600 * 24 * 7 * 1000; //Token expiration (1 week) in ms.
-
 class RefreshToken {
-    static generateNewToken(userId, userAgent){
+    static generateNewToken(userId, userAgent, ip){
         return new Promise((resolve, reject) => {
             crypto.randomBytes(64, (error, buffer) => {
                 if(error) reject(error);
@@ -18,6 +15,7 @@ class RefreshToken {
                     let newRefreshToken = {
                         user: userId,
                         user_agent: userAgent,
+                        ip: ip,
                         token: hash,
                         expires_at: Date.now() + EXPIRATIONS.REFRESH_TOKEN
                     };
@@ -38,7 +36,9 @@ class RefreshToken {
             bcrypt.compare(token, this.token, (error, isMatch) => {
                 if(error) reject(error);
                 if(!isMatch) reject(errors.invalid_refresh_token);
+
                 this.expires_at = Date.now() + EXPIRATIONS.REFRESH_TOKEN;
+                
                 this.save().then(result => {
                     resolve();
                 }, error => {
@@ -56,6 +56,10 @@ const refreshTokenSchema = new Schema({
         ref: 'User'
     },
     user_agent: {
+        type: String,
+        required: true
+    },
+    ip: {
         type: String,
         required: true
     },

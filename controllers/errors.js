@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const { ERRORS } = require('../constants');
 const mongooseError = require('mongoose').Error.ValidationError;
 const ev = require('express-validation');

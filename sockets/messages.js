@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const io = require('../socketIO');
 const { EVENTS, DEFAULTS, ERRORS } = require('../constants');
 const { Message, User } = require('../db').models;

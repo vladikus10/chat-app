@@ -26,7 +26,7 @@ module.exports.login = (req, res, next) => {
                         });
                     },
                     done => {
-                        RefreshToken.generateNewToken(user._id, req.headers['user-agent']).then(refreshToken => {
+                        RefreshToken.generateNewToken(user._id, req.headers['user-agent'], req.ip).then(refreshToken => {
                             done(null, refreshToken);
                         }, error => {
                             done(error);
@@ -34,8 +34,10 @@ module.exports.login = (req, res, next) => {
                     }
                 ], (error, [userData, refreshToken]) => {
                     if (error) return next(error);
+
                     let response = userData;
                     response.refresh_token = refreshToken;
+
                     res.status(200).send(response);
                 });
             });
@@ -45,14 +47,15 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.refresh = (req, res, next) => {
-    let rToken = req.headers['x-refresh-token'];
-    let aToken = req.headers['x-access-token'];
+    const rToken = req.headers['x-refresh-token'];
+    const aToken = req.headers['x-access-token'];
     if (!rToken || !aToken) return next(ERRORS.MISSING_TOKENS);
 
-    let userId = rToken.split('.')[0];
-    let userAgent = req.headers['user-agent'];
+    const userId = rToken.split('.')[0];
+    const userAgent = req.headers['user-agent'];
+    const ip = req.ip;
 
-    RefreshToken.findOne({ user: userId, user_agent: userAgent })
+    RefreshToken.findOne({ user: userId, user_agent: userAgent, ip: ip })
         .populate('user')
         .exec()
         .then(refreshToken => {
@@ -69,7 +72,7 @@ module.exports.refresh = (req, res, next) => {
                         });
                     },
                     done => {
-                        RefreshToken.generateNewToken(userId, userAgent).then(token => {
+                        RefreshToken.generateNewToken(userId, userAgent, ip).then(token => {
                             done(null, token);
                         }, error => {
                             done(error);
