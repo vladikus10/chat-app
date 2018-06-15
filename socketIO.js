@@ -9,9 +9,9 @@ let events = [];
 let io = null;
 
 module.exports.setup = (server, socketsPath) => {
-  io = require('socket.io')(server, {
-    adapter: redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT })
-  });
+  io = require('socket.io')(server);
+
+  //io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
 
   fs.readdirSync(socketsPath).forEach((name) => {
     require(`${socketsPath}/${name}`);
@@ -32,7 +32,7 @@ module.exports.setup = (server, socketsPath) => {
     });
   });
 
-  io.of('/').on('connection', (socket) => {
+  io.on('connection', (socket) => {
     console.log(`Socket connection: ${socket.id}`);
     socket.authorized = false;
 

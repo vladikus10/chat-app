@@ -14,7 +14,7 @@ require('dotenv').config();
 
 
 if(cluster.isMaster) {
-    for(let i = 0; i < 1; i++){
+    for(let i = 0; i < numberOfCores; i++){
         cluster.fork();
     }
 
