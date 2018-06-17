@@ -5,7 +5,7 @@ require('dotenv').config();
 require('../db').setup(path.join(root, '/models'));
 const models = require('../db').models;
 
-global.url = 'http://localhost:3000';
+global.url = `http://localhost:${process.env.PORT}`;
 
 before(function(next){
     let asyncJobs = [];

@@ -85,14 +85,14 @@ describe('Messaging', () => {
 
         const io2 = io(`${global.url}?access_token=${user2.access_token}`);
 
-        io2.on(EVENTS.NEW_MESSAGE, receivedMessage => {
-
+        io2.on(EVENTS.NEW_MESSAGE, (receivedMessage) => {
             expect(receivedMessage.from).to.equal(user1._id);
             expect(receivedMessage.to).to.equal(user2._id);
             expect(receivedMessage.message).to.equal(message.message);
 
             newMessage = receivedMessage;
 
+            io2.close();
             done();
         });
 
@@ -102,6 +102,7 @@ describe('Messaging', () => {
             io1.on('connect', () => {
 
                 io1.emit(EVENTS.SEND_MESSAGE, message);
+                io1.close();
             });
         });
     });
@@ -140,6 +141,7 @@ describe('Messaging', () => {
                     expect(res.body.messages).to.be.an('array');
                     expect(res.body.messages[0].seen).to.equal(true);
 
+                    io2.close();
                     done();
                 }, error => {
                     done(error);

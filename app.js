@@ -4,7 +4,7 @@ const http = require('http');
 const url = require('url');
 const path = require('path');
 const bodyParser = require('body-parser');
-//const cors = require('cors');
+const cors = require('cors');
 const cluster = require('cluster');
 const numberOfCores = require('os').cpus().length;
 //Set appRoot as a global
@@ -14,7 +14,7 @@ require('dotenv').config();
 
 
 if(cluster.isMaster) {
-    for(let i = 0; i < numberOfCores; i++){
+    for(let i = 0; i < 1; i++){
         cluster.fork();
     }
 
@@ -28,18 +28,14 @@ else {
     //Setup database
     require('./db').setup(path.join(__dirname, 'models'));
     
-    const pug = require('pug');
     //Creating an express app
     const app = express();
     const server = http.createServer(app);
 
     //Add app dependecies
     app.use(express.static(path.join(__dirname, '/public')));
-    //app.use(cors());
+    app.use(cors());
     app.use(bodyParser.json());
-
-    app.set('view engine', 'pug');
-    app.set('views', path.join(__dirname, '/views'));
 
     //Start socket server and route the controllers
     require('./socketIO').setup(server, path.join(__dirname, 'sockets'));

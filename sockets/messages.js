@@ -19,7 +19,7 @@ io.on(EVENTS.SEND_MESSAGE, (socket, message, response = DEFAULTS.CALLBACK) => {
 
             newMessage.save().then(message => {
                 io.directMessage(EVENTS.NEW_MESSAGE, message, String(message.to));
-                response(message);
+                response(null, message);
             }, error => {
                 console.error(error);
                 response(ERRORS.INTERNAL);

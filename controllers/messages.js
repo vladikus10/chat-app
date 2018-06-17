@@ -5,8 +5,8 @@ module.exports.get = (req, res, next) => {
     const userId = res.locals.session._id;
     const recipientId = req.params.recipientId;
 
-    const offset = req.query.offset || DEFAULTS.OFFSET;
-    const limit = req.query.limit || DEFAULTS.LIMIT;
+    const offset = Number(req.query.offset) || DEFAULTS.OFFSET;
+    const limit = Number(req.query.limit) || DEFAULTS.LIMIT;
 
     Message.findAndCountTotal({
         $or: [{
@@ -17,7 +17,7 @@ module.exports.get = (req, res, next) => {
             to: userId
         }]
     }, {}, {
-        sort: { timestamp: 1 },
+        sort: { timestamp: -1 },
         limit: limit,
         skip: offset,
         lean: true

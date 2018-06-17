@@ -3,6 +3,19 @@ const jwt = require('./helpers/jwt');
 
 const redisAdapter = require('socket.io-redis');
 
+const Redis = require('ioredis');
+const pub = new Redis({
+  port: process.env.REDIS_PORT,
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD
+});
+
+const sub = new Redis({
+  port: process.env.REDIS_PORT,
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD
+});
+
 const { ERRORS } = require('./constants');
 
 let events = [];
@@ -11,7 +24,7 @@ let io = null;
 module.exports.setup = (server, socketsPath) => {
   io = require('socket.io')(server);
 
-  io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
+  io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 
   fs.readdirSync(socketsPath).forEach((name) => {
     require(`${socketsPath}/${name}`);
@@ -54,12 +67,26 @@ module.exports.setup = (server, socketsPath) => {
   });
 };
 
-module.exports.broadcast = (event, message) => {
-  io.sockets.emit(event, message);
+/**
+ * Broadcasts a message to all sockets.
+ * @param {String} event Event name.
+ * @param {String|Object} message Message to broadcast.
+ * @param {String} [userId] Optional user id to ignore i nthe broadcast.
+ */
+module.exports.broadcast = (event, message, userId = null) => {
+  const socket = io.sockets.connected[userId];
+  if(socket) socket.broadcast.emit(event, message);
+  else io.sockets.emit(event, message);
 };
 
+/**
+ * Sends a direct message to a socket.
+ * @param {String} event Event name.
+ * @param {String|Object} message Message to send.
+ * @param {String} userId User id to send to.
+ */
 module.exports.directMessage = (event, message, userId) => {
-  let socket = io.sockets.connected[userId];
+  const socket = io.sockets.connected[userId];
   if(socket) socket.emit(event, message);
 };
 

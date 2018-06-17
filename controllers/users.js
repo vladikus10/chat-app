@@ -1,5 +1,6 @@
 const { User } = require('../db').models;
-const { MESSAGES } = require('../constants');
+const { MESSAGES, EVENTS } = require('../constants');
+const io = require('../socketIO');
 
 module.exports.get = (req, res, next) => {
     const loggedInUser = res.locals.session._id;
@@ -22,6 +23,10 @@ module.exports.create = (req, res, next) => {
     const newUser = new User(userData);
 
     newUser.save().then(user => {
+        io.broadcast(EVENTS.NEW_USER, {
+			_id: user._id,
+			username: user.username
+		});
         res.status(201).send({message: MESSAGES.USER_CREATED});
     }, error => {
         next(error);
@@ -35,6 +40,7 @@ module.exports.update = (req, res, next) => {
     User.findByIdAndUpdate(userId, {username: newUsername}, {new: true})
         .exec()
         .then(user => {
+            io.broadcast(EVENTS.USERNAME_UPDATED, user.toObject(), userId);
             res.status(200).send(user);
         }, error => {
             next(error);

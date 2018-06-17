@@ -1,5 +1,5 @@
-const Redis = require('redis');
-const redis = Redis.createClient({
+const Redis = require('ioredis');
+const redis = Redis({
     port: process.env.REDIS_PORT,
     host: process.env.REDIS_HOST,
     password: process.env.REDIS_PASSWORD

@@ -1,7 +1,7 @@
 const DateJs = require('date.js');
 
 const EXPIRATIONS = {
-    ACCESS_TOKEN: '15 minutes',
+    ACCESS_TOKEN: '120 minutes',
     REFRESH_TOKEN: '1 week'
 };
 
@@ -46,7 +46,9 @@ const DEFAULTS = {
 const EVENTS = {
     SEND_MESSAGE: 'send_message',
     NEW_MESSAGE: 'new_message',
-    MARK_SEEN: 'mark_seen'
+    MARK_SEEN: 'mark_seen',
+    USERNAME_UPDATED: 'username_updated',
+    NEW_USER: 'new_user'
 };
 
 module.exports = {
