@@ -14,7 +14,7 @@ require('dotenv').config();
 
 
 if(cluster.isMaster) {
-    for(let i = 0; i < 1; i++){
+    for(let i = 0; i < 1; i++){ //Set to 1 instead of number of cpus due to socket.io.
         cluster.fork();
     }
 
